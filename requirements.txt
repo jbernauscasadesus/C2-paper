@@ -1,0 +1,4 @@
+torch
+opencv-contrib-python
+numpy
+imageio-ffmpeg

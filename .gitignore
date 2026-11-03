@@ -1,0 +1,18 @@
+# Videos i resultats generats
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# Paper
+*.pdf
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Sistema
+.DS_Store
+Thumbs.db
