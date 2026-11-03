@@ -43,14 +43,6 @@ python check_tvl1.py
 | `compare_flow.py` | Horn-Schunck i generació del vídeo comparatiu |
 | `check_tvl1.py` | Proves amb flux sintètic conegut |
 
-## Diferències amb el paper
-
-- L'equació 17 impresa diverge. El codi fa servir `u = v + θ div p`, coherent amb el pas dual. `TVL1(literal_eq17=True)` reprodueix la versió impresa.
-- El paper no fixa λ ni θ. Els valors per defecte són λ = 0,15 i θ = 0,3, i `compare_flow.py` fa servir λ = 0,5.
-- S'executa amb PyTorch, no amb shaders Cg.
-- Els vídeos passen per un petit desenfocament gaussià abans de calcular el flux.
-- Horn-Schunck fa servir piràmide i warping per comparar-lo en igualtat de condicions, de manera que no és la versió original de 1981.
-
 ## Validació
 
 Error mitjà en píxels (EPE) amb dades sintètiques, 1 warp i 4 nivells. La rèplica fa 50 iteracions per nivell.
