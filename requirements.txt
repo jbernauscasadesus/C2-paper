@@ -1,4 +1,16 @@
-torch
+# Install with:  pip install -r requirements.txt
+# PyTorch: CUDA 12.8 build (works with your driver 576.80 = CUDA 12.9; RTX 3070).
+# Do NOT use plain "pip install torch": current default builds target CUDA 13 (needs a newer driver)
+# and on Windows PyPI only has a CPU build.
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.7.1+cu128
+torchvision==0.22.1+cu128
+
 opencv-contrib-python
 numpy
 imageio-ffmpeg
+matplotlib
+pandas
+tqdm
+jupyterlab
+ipykernel
