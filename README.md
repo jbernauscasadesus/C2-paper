@@ -42,6 +42,23 @@ python check_tvl1.py
 | `tvl1_demo.py` | TV-L1 i les demos del mirall i el Pong |
 | `compare_flow.py` | Horn-Schunck i generació del vídeo comparatiu |
 | `check_tvl1.py` | Proves amb flux sintètic conegut |
+| `exp1_solvers.py` | Exp. 1: la mateixa energia TV-L1 amb dos algorismes (el del paper i |x| arrodonit + descens de gradient) |
+| `exp2_yosemite.py` | Exp. 2: Horn-Schunck, TV-L1 i RAFT a Yosemite 8-9, amb la mètrica del paper (AAE) i proves de robustesa |
+| `comparison.ipynb` | Comparació a KITTI 2015 i Middlebury RubberWhale |
+
+## Experiments per a la presentació
+
+Tots dos scripts descarreguen Yosemite (sense núvols, M. Black) a `data/` i desen figures i taules a `results/`. Funcionen en CPU en uns minuts.
+
+```bash
+python exp1_solvers.py
+python exp2_yosemite.py
+```
+
+Resultats en CPU (Apple M, PyTorch 2.7):
+
+- **Exp. 1.** Amb una sola escala i la mateixa energia, l'algorisme del paper arriba a menys d'un 5 % de l'energia mínima en 0,04 s. El descens de gradient amb |x| arrodonit hi arriba en 10,4 s amb ε = 0,1. Amb ε = 1 s'estanca un 17 % per sobre i amb ε = 0,01 és massa lent.
+- **Exp. 2.** A Yosemite, amb 50 iteracions per nivell, el nostre TV-L1 dona un AAE de 2,82° sense cel (paper: 2,85°), Horn-Schunck 5,46° i RAFT 3,09°. Amb cel el nostre error és més alt que al paper (10,5° davant 5,1°). Amb un 20 % de píxels corromputs, l'EPE de TV-L1 és 1,01 px i el de Horn-Schunck 2,13 px.
 
 ## Validació
 
@@ -53,7 +70,7 @@ Error mitjà en píxels (EPE) amb dades sintètiques, 1 warp i 4 nivells. La rè
 | Flux suau | 0,065 | 0,036 |
 | Objecte amb vores | 0,057 | 0,074 |
 
-Aquests valors no són una reproducció dels resultats del paper. El codi només s'ha provat en CPU, i no s'ha avaluat amb Yosemite ni Middlebury.
+Aquests valors no són una reproducció dels resultats del paper. La comparació amb el paper a Yosemite és a `exp2_yosemite.py`.
 
 ## Referències
 

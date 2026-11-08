@@ -16,6 +16,7 @@ import cv2
 import numpy as np
 
 KITTI_URL = "https://s3.eu-central-1.amazonaws.com/avg-kitti/data_scene_flow.zip"
+YOSEMITE_URL = "https://cs.brown.edu/people/mjblack/Sequences/yosemite.tar.gz"
 EXTRA_URL = "https://raw.githubusercontent.com/opencv/opencv_extra/4.x/testdata/cv/optflow/"
 FLO_MAGIC = 202021.25
 
@@ -98,6 +99,43 @@ def fetch_rubberwhale(data_dir):
     valid = np.isfinite(gt).all(-1) & (np.abs(gt) < 1e9).all(-1)
     return dict(name="RubberWhale", img0=cv2.imread(str(data_dir / "RubberWhale1.png")),
                 img1=cv2.imread(str(data_dir / "RubberWhale2.png")), gt=gt, valid=valid)
+
+
+def fetch_yosemite(data_dir, frame=8):
+    """Yosemite without clouds (Barron et al. 1994, distributed by M. Black), frames `frame` and `frame + 1`.
+
+    The images are 316 x 252 gray levels with a uniform black sky. The ground truth is stored as bytes
+    (value = byte * scale + pedestal), data0 = vertical and data1 = horizontal motion.
+    Returns img0, img1 (BGR uint8), gt (H, W, 2), valid (all pixels) and sky (H, W), the sky mask
+    used to report the error "without sky" as in Table 2 of the paper.
+    """
+    import re
+    import tarfile
+
+    data_dir = Path(data_dir)
+    root = data_dir / "yosemite"
+    if not root.exists():
+        archive = download(YOSEMITE_URL, data_dir / "yosemite.tar.gz")
+        with tarfile.open(archive) as tar:
+            tar.extractall(data_dir, filter="data")
+    h, w = 252, 316
+
+    def image(k):
+        gray = np.fromfile(root / "yos-images" / f"yos{k}" / "data", np.uint8).reshape(h, w)
+        return cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+
+    folder = root / "yos-flows" / f"actual-flow{frame}"
+    text = (folder / "descriptor").read_text()
+    scale = float(re.search(r"\(scale ([-\d.e]+)\)", text).group(1))
+    pedestal = float(re.search(r"\(pedestal ([-\d.e]+)\)", text).group(1))
+    v = np.fromfile(folder / "data0", np.uint8).reshape(h, w) * scale + pedestal
+    u = np.fromfile(folder / "data1", np.uint8).reshape(h, w) * scale + pedestal
+    img0 = image(frame)
+    # The sky is the black region above the horizon in each column.
+    horizon = np.argmax(img0[..., 0] > 0, axis=0)
+    sky = np.arange(h)[:, None] < horizon[None, :]
+    return dict(name=f"Yosemite {frame}-{frame + 1}", img0=img0, img1=image(frame + 1),
+                gt=np.dstack((u, v)).astype(np.float32), valid=np.ones((h, w), bool), sky=sky)
 
 
 # ------------------------------------------------------------------ metrics
