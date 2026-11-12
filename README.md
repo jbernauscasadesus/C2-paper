@@ -1,4 +1,4 @@
-# Flux òptic TV-L1 en temps real
+# Flux òptic TV-L1 en temps real.
 
 Rèplica en PyTorch del mètode de Zach, Pock i Bischof (2007), amb una comparació amb Horn-Schunck i dues demos amb webcam.
 
